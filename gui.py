@@ -516,10 +516,73 @@ class PDFGeneratorGUI:
             self.step_var.set(step)
         self.root.update_idletasks()
         
+    def check_dependencies(self):
+        """Check if all required dependencies for pass-schedule-pdf.py are available"""
+        required_modules = [
+            ('selenium', 'Selenium WebDriver'),
+            ('reportlab', 'ReportLab PDF library'),
+            ('PyPDF2', 'PyPDF2 library'),
+            ('dotenv', 'python-dotenv'),
+            ('PIL', 'Pillow (PIL)')
+        ]
+        
+        missing_modules = []
+        
+        for module_name, display_name in required_modules:
+            try:
+                __import__(module_name)
+            except ImportError:
+                missing_modules.append(display_name)
+        
+        if missing_modules:
+            error_message = "Modules manquants pour la génération PDF :\n\n"
+            error_message += "\n".join(f"• {module}" for module in missing_modules)
+            error_message += "\n\nInstallez-les avec :\n"
+            error_message += "pip install selenium reportlab PyPDF2 python-dotenv pillow"
+            
+            messagebox.showerror("Dépendances manquantes", error_message)
+            return False
+        
+        # Check Chrome availability (quick check)
+        try:
+            from selenium import webdriver
+            from selenium.webdriver.chrome.service import Service
+            from selenium.webdriver.chrome.options import Options
+            
+            # Just check if we can import and create service
+            options = Options()
+            options.add_argument("--headless")
+            options.add_argument("--no-sandbox")
+            
+            # Quick test - don't actually start browser
+            service = Service()
+            
+        except ImportError as e:
+            error_message = "Selenium non disponible :\n\n"
+            error_message += str(e)
+            messagebox.showerror("Selenium manquant", error_message)
+            return False
+        except Exception as e:
+            # Chrome/ChromeDriver issue - warn but allow to proceed
+            self.log_message(f"⚠️ Avertissement Chrome: {e}")
+            result = messagebox.askyesno(
+                "Chrome non vérifié", 
+                f"Impossible de vérifier Chrome/ChromeDriver :\n{e}\n\nContinuer quand même ?"
+            )
+            if not result:
+                return False
+        
+        return True
+    
     def start_generation(self):
         """Start PDF generation in a separate thread"""
         if self.is_running:
             self.log_message("⚠️ Generation already in progress!")
+            return
+        
+        # Check dependencies first
+        self.log_message("🔍 Vérification des dépendances...")
+        if not self.check_dependencies():
             return
         
         # Validate required settings
@@ -597,6 +660,11 @@ class PDFGeneratorGUI:
                     print("⚠️  Warning: Make sure all dependencies are installed in system Python")
                 
             script_path = "pass-schedule-pdf.py"
+            
+            # Check if script exists
+            if not os.path.exists(script_path):
+                self.log_queue.put(('log', f"❌ Script not found: {script_path}\n"))
+                return
             
             self.log_queue.put(('progress', 15, "Lancement du script"))
             print(f"📄 Executing: {python_exe} {script_path}")  # Console log
