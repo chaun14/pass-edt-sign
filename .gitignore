@@ -1,0 +1,10 @@
+.env
+settings.ini
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+*.zip
+signature.png
+ 

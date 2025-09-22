@@ -1,0 +1,18 @@
+# Requirements for PASS EDT Screenshot/PDF Generator
+# 
+# Installation: pip install -r requirements.txt
+
+# Core dependencies
+requests>=2.31.0
+selenium>=4.15.0
+python-dotenv>=1.0.0
+Pillow>=10.0.0
+
+# PDF generation and editing
+PyPDF2>=3.0.1
+reportlab>=4.0.4
+
+# Date/time handling (built-in datetime module is used)
+# Web automation (selenium WebDriver)
+# Base64 encoding (built-in base64 module is used)
+# File operations (built-in shutil and os modules are used)
