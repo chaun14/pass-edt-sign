@@ -834,9 +834,22 @@ def main(username, password, nom_prenom, promo, target_date, save_folder, debug_
         
         if missing_vars:
             raise ScheduleGenerationError(f"Missing environment variables: {', '.join(missing_vars)}")
-        
+
+
+
+        # Ensure localhost is not proxied (for WSL2 and similar environments)
+        no_proxy = os.environ.get("NO_PROXY", "")
+        needed = ["127.0.0.1", "localhost", "::1"]
+        for host in needed:
+            if host not in no_proxy:
+                no_proxy = f"{no_proxy},{host}" if no_proxy else host
+        os.environ["NO_PROXY"] = no_proxy
+        os.environ["no_proxy"] = no_proxy
+
+
         print(f"✅ Configuration validated for {nom_prenom} ({promo})")
-        
+    
+
         # Créer le dossier de sauvegarde
         try:
             FileUtils.ensure_directory_exists(save_folder)
