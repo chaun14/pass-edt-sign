@@ -7,8 +7,23 @@ Ce projet permet de générer et de signer automatiquement des emplois du temps 
 1. Clone / Download the repository:
 
 2. Install dependencies (preferably in a virtual environment):
+
    ```bash
    pip install -r requirements.txt
+   ```
+
+   If you are using a debian-based system, you might need to install python packages through apt:
+
+   ```bash
+   sudo apt update
+   sudo apt install -y \
+    python3-requests \
+    python3-selenium \
+    python3-dotenv \
+    python3-pil \
+    python3-pypdf2 \
+    python3-reportlab
+
    ```
 
 ## Running the GUI
