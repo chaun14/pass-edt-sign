@@ -952,6 +952,16 @@ if __name__ == "__main__":
 
     print(f"Configuration: username={username}, target_date={target_date}, save_folder={save_folder}, debug_mode={debug_mode}")
     
+    # Vérification du fichier de signature
+    signature_file = os.getenv('SIGNATURE_FILE', 'signature.png')
+    if not os.path.exists(signature_file):
+        print(f"❌ ERREUR: Le fichier de signature '{signature_file}' est introuvable.")
+        print("   Assurez-vous que le fichier existe dans le répertoire courant.")
+        print("   Ou modifiez la variable SIGNATURE_FILE dans votre fichier .env ou sur l'interface utilisateur.")
+        sys.exit(1)
+    else:
+        print(f"✅ Fichier de signature trouvé: {signature_file}")
+    
     try:
         # Message de début
         print("📄 Starting schedule PDF generation...")
